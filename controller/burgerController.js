@@ -1,30 +1,32 @@
 var express = require("express");
 var router = express.Router();
 // Import the model (cat.js) to use its database functions.
-var burger = require("selectAll../models/burger.js");
+var burger = require("../models/burger.js");
 // Create all our routes and set up logic within those routes where required.
 router.get("/", function(req, res) {
   burger.selectAll(function(data) {
     var hbsObject = {
-      burger: data
+      burgers: data
     };
-    console.log(hbsObject);
-    res.render("index", hbsObject);
+    console.log(":::::::"+ hbsObject);
+    res.render('index', hbsObject);
   });
 });
-router.post("/api/burger", function(req, res) {
-  burger.insertOne(["burger_name", "devoured"], [req.body.name, req.body.sleepy], function(result) {
-    // Send back the ID of the new quote
-    res.json({ id: result.insertId });
-  });
+router.post("/api/burgers", function(req, res) {
+  if(req.body.burger_name != "")
+  {
+    burger.insertOne(["burger_name", "devoured"], [req.body.burger_name , false], function(result) {
+       res.redirect('/');
+    });
+  }
+  else{
+      res.redirect('/');
+      alert("Please entry a proper burger name");
+  }
 });
-router.put("/api/burger/:id", function(req, res) {
+router.put("/api/burgers/:id", function(req, res) {
   burger.updateOne("devoured", true, "id", req.params.id, function(result) {
-      if (result.changedRows === 0) {
-        // If no rows were changed, then the ID must not exist, so 404
-        return res.status(404).end();
-      }
-      res.status(200).end();
+      res.redirect('/');
     }
   );
 });
